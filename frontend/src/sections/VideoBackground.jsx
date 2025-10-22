@@ -1,4 +1,3 @@
-// components/VideoBackground.jsx
 import { useEffect, useRef } from "react";
 
 const VideoBackground = () => {
@@ -27,14 +26,13 @@ const VideoBackground = () => {
 
   return (
     <div
-      className="fixed top-0 left-0 w-full h-full -z-10 overflow-hidden"
+      className="relative w-full pb-[56.25%]"
     >
       <iframe
         ref={iframeRef}
         src="https://player.vimeo.com/video/1128761634?background=1&autoplay=1&loop=1&muted=1&controls=0"
-        className="w-full h-full object-cover"
-        frameBorder="0"
-        allow="autoplay; fullscreen"
+        className="absolute top-0 left-0 w-full h-full border-0 rounded-none"
+        allow="autoplay; fullscreen; picture-in-picture"
         allowFullScreen
         title="Background Video"
       ></iframe>

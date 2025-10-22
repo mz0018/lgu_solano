@@ -1,29 +1,42 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useState, useEffect } from "react";
 import NavbarComponent from "./components/NavbarComponent";
 
-import CarouselFallback from "./fallbacks/CarouselFallback";
+import VideoBackgroundFallback from "./fallbacks/VideoBackgroundFallback";
 import WhatWeDoFallback from "./fallbacks/WhatWeDoFallback";
 import WhySolanoFallback from "./fallbacks/WhySolanoFallback";
 import SubFooterFallback from "./fallbacks/SubFooterFallback";
 import FooterFallback from "./fallbacks/FooterFallback";
 
-const CarouselSection = lazy(() => import("./sections/CarouselSection"));
 const WhatWeDoSection = lazy(() => import("./sections/WhatWeDoSection"));
 const WhySolanoSection = lazy(() => import("./sections/WhySolanoSection"));
 const SubFooterSection = lazy(() => import("./sections/SubFooterSection"));
 const FooterSection = lazy(() => import("./sections/FooterSection"));
-import VideoBackground from "./sections/VideoBackground";
+const VideoBackgroundSection = lazy(() => import("./sections/VideoBackground"));
+
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const App = () => {
+  const [showVideo, setShowVideo] = useState(false);
+
+  useEffect(() => {
+    const showVideoLater = async () => {
+      await delay(20000);
+      setShowVideo(true);
+    };
+    showVideoLater();
+  }, []);
+
   return (
     <div className="relative">
-      <VideoBackground />
+      <NavbarComponent />
 
       <div className="relative z-10">
-        <NavbarComponent />
-
-        <Suspense fallback={<CarouselFallback />}>
-          <CarouselSection />
+        <Suspense fallback={<VideoBackgroundFallback />}>
+          {showVideo ? (
+            <VideoBackgroundSection />
+          ) : (
+            <VideoBackgroundFallback />
+          )}
         </Suspense>
 
         <Suspense fallback={<WhatWeDoFallback />}>
