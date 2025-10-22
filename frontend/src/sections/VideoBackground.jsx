@@ -126,14 +126,14 @@ const VideoBackground = () => {
   };
 
   return (
-    <div className="relative w-full pb-[56.25%] bg-black">
+    <div className="relative w-full pb-[56.25%] lg:pb-[36.15%] overflow-hidden">
       <iframe
         ref={iframeRef}
         src={`https://player.vimeo.com/video/${VIDEO_ID}?autoplay=1&muted=1&loop=1&controls=0&playsinline=1`}
-        className="absolute top-0 left-0 w-full h-full border-0"
+        className="absolute top-0 left-0 w-full h-auto min-h-full max-w-none border-0"
         allow="autoplay; fullscreen; picture-in-picture"
         title="Vimeo Background"
-      ></iframe>
+      />
 
       <div className="absolute inset-0 bg-black/30 pointer-events-none"></div>
 
