@@ -16,15 +16,6 @@ const VideoBackgroundSection = lazy(() => import("./sections/VideoBackground"));
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const App = () => {
-  const [showVideo, setShowVideo] = useState(false);
-
-  useEffect(() => {
-    const showVideoLater = async () => {
-      await delay(20000);
-      setShowVideo(true);
-    };
-    showVideoLater();
-  }, []);
 
   return (
     <div className="relative">
@@ -32,11 +23,7 @@ const App = () => {
 
       <div className="relative z-10">
         <Suspense fallback={<VideoBackgroundFallback />}>
-          {showVideo ? (
-            <VideoBackgroundSection />
-          ) : (
-            <VideoBackgroundFallback />
-          )}
+          <VideoBackgroundSection />
         </Suspense>
 
         <Suspense fallback={<WhatWeDoFallback />}>
