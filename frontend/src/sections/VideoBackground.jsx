@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import Player from "@vimeo/player";
+import { Play, Pause, Maximize2 } from "lucide-react";
 
 const VIDEO_ID = "1128761634";
 
@@ -7,9 +8,11 @@ const VideoBackground = () => {
   const iframeRef = useRef(null);
   const playerRef = useRef(null);
   const observerRef = useRef(null);
+
   const [ready, setReady] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [autoplayBlocked, setAutoplayBlocked] = useState(false);
+  const [userPaused, setUserPaused] = useState(false);
 
   useEffect(() => {
     const iframe = iframeRef.current;
@@ -35,6 +38,7 @@ const VideoBackground = () => {
           await player.play();
           console.log("Autoplay succeeded (player.play() resolved)");
           setAutoplayBlocked(false);
+          setUserPaused(false);
         } catch (err) {
           console.warn("Autoplay blocked or failed:", err);
           setAutoplayBlocked(true);
@@ -44,8 +48,11 @@ const VideoBackground = () => {
           async ([entry]) => {
             try {
               if (!playerRef.current) return;
-              if (entry.isIntersecting) await playerRef.current.play();
-              else await playerRef.current.pause();
+              if (entry.isIntersecting) {
+                if (!userPaused) await playerRef.current.play();
+              } else {
+                await playerRef.current.pause();
+              }
             } catch (e) {
               console.warn("IntersectionObserver play/pause error:", e);
             }
@@ -73,7 +80,36 @@ const VideoBackground = () => {
       }
       iframe.removeEventListener?.("load", onIframeLoad);
     };
-  }, []);
+  }, [userPaused]);
+
+  const handleTogglePlay = async () => {
+    const player = playerRef.current;
+    if (!player) return;
+    try {
+      if (playing) {
+        await player.pause();
+        setUserPaused(true);
+      } else {
+        await player.setVolume(0);
+        await player.play();
+        setUserPaused(false);
+      }
+    } catch (err) {
+      console.warn("toggle play failed:", err);
+    }
+  };
+
+  const handleFullscreen = async () => {
+    const iframe = iframeRef.current;
+    if (!iframe) return;
+    try {
+      if (iframe.requestFullscreen) await iframe.requestFullscreen();
+      else if (iframe.webkitRequestFullscreen) iframe.webkitRequestFullscreen();
+      else if (iframe.msRequestFullscreen) iframe.msRequestFullscreen();
+    } catch (err) {
+      console.warn("request fullscreen failed:", err);
+    }
+  };
 
   const handleManualPlay = async () => {
     const player = playerRef.current;
@@ -82,6 +118,7 @@ const VideoBackground = () => {
       await player.setVolume(0);
       await player.play();
       setAutoplayBlocked(false);
+      setUserPaused(false);
       console.log("Manual play succeeded");
     } catch (err) {
       console.warn("Manual play failed:", err);
@@ -89,7 +126,7 @@ const VideoBackground = () => {
   };
 
   return (
-    <div className="relative w-full pb-[56.25%]">
+    <div className="relative w-full pb-[56.25%] bg-black">
       <iframe
         ref={iframeRef}
         src={`https://player.vimeo.com/video/${VIDEO_ID}?autoplay=1&muted=1&loop=1&controls=0&playsinline=1`}
@@ -99,6 +136,30 @@ const VideoBackground = () => {
       ></iframe>
 
       <div className="absolute inset-0 bg-black/30 pointer-events-none"></div>
+
+      <div className="absolute right-4 top-4 z-40">
+        <div className="flex items-center gap-2 bg-black/50 px-2 py-1 rounded-md backdrop-blur-sm pointer-events-auto">
+          <button
+            type="button"
+            onClick={handleTogglePlay}
+            title={playing ? "Pause" : "Play"}
+            aria-label={playing ? "Pause video" : "Play video"}
+            className="text-white p-2 rounded hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/30"
+          >
+            {playing ? <Pause size={18} /> : <Play size={18} />}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleFullscreen}
+            title="Fullscreen"
+            aria-label="Enter fullscreen"
+            className="text-white p-2 rounded hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/30"
+          >
+            <Maximize2 size={16} />
+          </button>
+        </div>
+      </div>
 
       <div className="absolute left-4 top-4 z-20 text-white text-sm bg-black/50 px-2 py-1 rounded">
         <div>ready: {String(ready)}</div>
@@ -111,6 +172,7 @@ const VideoBackground = () => {
           <button
             onClick={handleManualPlay}
             className="bg-black/70 text-white px-4 py-3 rounded-md shadow-lg"
+            type="button"
           >
             Tap to play background video
           </button>

@@ -1,7 +1,6 @@
-import { Suspense, lazy, useState, useEffect } from "react";
+import { Suspense, lazy } from "react";
 import NavbarComponent from "./components/NavbarComponent";
 
-import VideoBackgroundFallback from "./fallbacks/VideoBackgroundFallback";
 import WhatWeDoFallback from "./fallbacks/WhatWeDoFallback";
 import WhySolanoFallback from "./fallbacks/WhySolanoFallback";
 import SubFooterFallback from "./fallbacks/SubFooterFallback";
@@ -22,7 +21,7 @@ const App = () => {
       <NavbarComponent />
 
       <div className="relative z-10">
-        <Suspense fallback={<VideoBackgroundFallback />}>
+        <Suspense>
           <VideoBackgroundSection />
         </Suspense>
 
