@@ -80,7 +80,7 @@ const VideoBackground = () => {
       }
       iframe.removeEventListener?.("load", onIframeLoad);
     };
-  }, [userPaused]);
+  }, []);
 
   const handleTogglePlay = async () => {
     const player = playerRef.current;
@@ -159,12 +159,6 @@ const VideoBackground = () => {
             <Maximize2 size={16} />
           </button>
         </div>
-      </div>
-
-      <div className="absolute left-4 top-4 z-20 text-white text-sm bg-black/50 px-2 py-1 rounded">
-        <div>ready: {String(ready)}</div>
-        <div>playing: {String(playing)}</div>
-        <div>autoplayBlocked: {String(autoplayBlocked)}</div>
       </div>
 
       {autoplayBlocked && (
